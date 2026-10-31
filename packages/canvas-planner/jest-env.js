@@ -19,6 +19,7 @@
 import '@instructure/canvas-theme'
 import generateId from 'format-message-generate-id/underscored_crc32'
 
+import axios from 'axios'
 import Enzyme from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 
@@ -50,3 +51,10 @@ if (!('MutationObserver' in window)) {
 if (!window.scroll || window.scroll?.toString().includes('notImplemented')) {
   window.scroll = function () {}
 }
+
+// moxios@0.4 bundles an old axios buildURL that calls params.hasOwnProperty(). axios >= 0.28 builds
+// config.params with a null prototype (prototype-pollution hardening), so give moxios a plain copy.
+axios.interceptors.request.use(config => {
+  if (config.params) config.params = {...config.params}
+  return config
+})

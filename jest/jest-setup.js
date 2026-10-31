@@ -151,3 +151,10 @@ if (!('matchMedia' in window)) {
 if (!('scrollIntoView' in window.HTMLElement.prototype)) {
   window.HTMLElement.prototype.scrollIntoView = () => {}
 }
+
+// moxios@0.4 bundles an old axios buildURL that calls params.hasOwnProperty(). axios >= 0.28 builds
+// config.params with a null prototype (prototype-pollution hardening), so give moxios a plain copy.
+require('axios').interceptors.request.use(config => {
+  if (config.params) config.params = {...config.params}
+  return config
+})
